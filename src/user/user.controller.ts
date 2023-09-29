@@ -9,27 +9,27 @@ import { ApiTags } from '@nestjs/swagger';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @ApiTags()
+  @ApiTags('user')
   @Post()
   create(@Body() data: CreateUserDto) {
     return this.userService.create(data);
   }
-  @ApiTags()
+  @ApiTags('user')
   @Get()
   findAll() {
     return this.userService.findAll();
   }
-  @ApiTags()
+  @ApiTags('user')
   @Get(':id')
   findOne(@ParamId() id: string) {
     return this.userService.findOne(+id);
   }
-  @ApiTags()
+  @ApiTags('user')
   @Patch(':id')
   update(@ParamId() id: string, @Body() data: UpdateUserDto) {
     return this.userService.update(+id, data);
   }
-  @ApiTags()
+  @ApiTags('user')
   @Delete(':id')
   remove(@ParamId() id: string) {
     return this.userService.remove(+id);
