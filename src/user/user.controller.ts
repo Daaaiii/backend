@@ -5,12 +5,11 @@ import {
   Body,
   Patch,
   Delete,
-  UseInterceptors,
+  Param,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { ParamId } from 'src/decorators/param-id.decorator';
 import { ApiTags } from '@nestjs/swagger';
 
 @Controller('user')
@@ -29,17 +28,17 @@ export class UserController {
   }
   @ApiTags('user')
   @Get(':id')
-  findOne(@ParamId() id: string) {
+  findOne(@Param('id') id: string) {
     return this.userService.findOne(+id);
   }
   @ApiTags('user')
   @Patch(':id')
-  update(@ParamId() id: string, @Body() data: UpdateUserDto) {
+  update(@Param('id') id: string, @Body() data: UpdateUserDto) {
     return this.userService.update(+id, data);
   }
   @ApiTags('user')
   @Delete(':id')
-  remove(@ParamId() id: string) {
+  remove(@Param('id') id: string) {
     return this.userService.remove(+id);
   }
 }
