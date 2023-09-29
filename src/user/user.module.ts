@@ -13,6 +13,7 @@ import { UserIdCheckMiddleware } from 'src/middleware/user-id-check.middleware';
   imports: [PrismaModule],
   controllers: [UserController],
   providers: [UserService],
+  exports: [UserService]
 })
 export class UserModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

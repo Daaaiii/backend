@@ -1,29 +1,60 @@
-import { Injectable } from '@nestjs/common';
-import { CreateAuthDto } from './dto/create-auth.dto';
-import { UpdateAuthDto } from './dto/update-auth.dto';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt/dist';
+import { PrismaService } from 'src/prisma/prisma.service';
+
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly JWTService: JwtService) {}
+  constructor(
+    private readonly JWTService: JwtService,
+    private readonly prisma: PrismaService,
+  ) {}
 
-  async create(createAuthDto: CreateAuthDto) {
+  async createToken() {
     return 'This action adds a new auth';
   }
 
-  findAll() {
+  async checkToken(token: string) {
     return `This action returns all auth`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} auth`;
-  }
+  async login(email: string, password: string) {
+    const user = await this.prisma.user.findFirst({
+      where: {
+        email,
+        password,
+      },
+    });
 
-  update(id: number, updateAuthDto: UpdateAuthDto) {
-    return `This action updates a #${id} auth`;
+    if (!user) {
+      throw new UnauthorizedException('Email e/ou senha incorretos.');
+    }
+    return user;
   }
+  async forget(email: string) {
+    const user = await this.prisma.user.findFirst({
+      where: {
+        email,
+      },
+    });
 
-  remove(id: number) {
-    return `This action removes a #${id} auth`;
+    if (!user) {
+      throw new UnauthorizedException('Email está incorreto.');
+    }
+    //TODO: enviar email
+    return true;
+  }
+  async reset(password: string, token: string) {
+    //TODO: validar o token
+    const id = 0;
+    await this.prisma.user.update({
+      where: {
+        id,
+      },
+      data: {
+        password,
+      },
+    });
+    return true;
   }
 }
