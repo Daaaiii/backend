@@ -23,7 +23,7 @@ export class AuthController {
   @ApiTags('auth')
   @Post('register')
   async register(@Body() body: RegisterAuthDto) {
-    return this.userService.create(body);
+    return this.authService.register(body);
   }
 
   @ApiTags('auth')
