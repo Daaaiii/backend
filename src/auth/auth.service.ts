@@ -11,8 +11,7 @@ import { RegisterAuthDto } from './dto/register-auth.dto';
 
 @Injectable()
 export class AuthService {
-  private audience: 'users';
-  private issuer: 'login';
+
 
   constructor(
     private readonly JWTService: JwtService,
@@ -31,26 +30,21 @@ export class AuthService {
         {
           expiresIn: '7 days',
           subject: String(user.id),
-          issuer: this.issuer,
-          audience: this.audience,
         },
       ),
     };
   }
 
-  async checkToken(token: string) {
+  checkToken(token: string) {
     try {
-      const data = this.JWTService.verify(token, {
-        issuer: this.issuer,
-        audience: this.audience,
-      });
+      const data = this.JWTService.verify(token);
       return data;
     } catch (error) {
       throw new BadRequestException(error);
     }
   }
 
-  async isValidToken(token: string) {
+  isValidToken(token: string) {
     try {
       this.checkToken(token);
       return true;

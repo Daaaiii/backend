@@ -7,16 +7,8 @@ import { PrismaService } from 'src/prisma/prisma.service';
 export class UserService {
   constructor(private readonly prisma: PrismaService) {}
 
-  create({ name, email, password }: CreateUserDto) {
-    return this.prisma.user.create({
-      data: {
-        name,
-        email,
-        password,
-        createdat: new Date(),
-        updateat: new Date(),
-      },
-    });
+  create(data: CreateUserDto) {
+    return this.prisma.user.create({ data });
   }
 
   async findAll() {
@@ -25,14 +17,12 @@ export class UserService {
 
   async findOne(id: number) {
     await this.exists(id);
-    return this.prisma.user.findFirst({
-      where: {
-        id,
-      },
+    return this.prisma.user.findUnique({
+      where: { id },
     });
   }
 
-  async update(id: number, { name, email, password }: UpdateUserDto) {
+  async update(id: number, { name, email, password, role }: UpdateUserDto) {
     this.exists(id);
 
     return await this.prisma.user.update({
@@ -41,6 +31,7 @@ export class UserService {
         name,
         email,
         password,
+        role,
         updateat: new Date(),
       },
     });

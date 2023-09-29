@@ -4,7 +4,10 @@ import {
   IsEmail,
   IsString,
   IsNotEmpty,
+  IsOptional,
+  IsEnum,
 } from 'class-validator';
+import { Role } from 'src/enums/role.enums';
 
 export class CreateUserDto {
   @ApiProperty()
@@ -23,4 +26,9 @@ export class CreateUserDto {
     minLength: 8,
   })
   password: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsEnum(Role)
+  role: number;
 }

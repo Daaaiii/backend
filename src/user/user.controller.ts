@@ -6,39 +6,47 @@ import {
   Patch,
   Delete,
   Param,
+  UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { RoleGuard } from 'src/guards/role.guard';
+import { AuthGuard } from 'src/guards/auth.guard';
+import { Roles } from 'src/decorators/roles.decorator';
+import { Role } from 'src/enums/role.enums';
 
+@Roles(Role.Admin)
+@UseGuards(AuthGuard, RoleGuard)
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @ApiTags('user')
   @Post()
-  create(@Body() data: CreateUserDto) {
+  async create(@Body() data: CreateUserDto) {
     return this.userService.create(data);
   }
+
   @ApiTags('user')
   @Get()
-  findAll() {
+  async findAll() {
     return this.userService.findAll();
   }
   @ApiTags('user')
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string) {
     return this.userService.findOne(+id);
   }
   @ApiTags('user')
   @Patch(':id')
-  update(@Param('id') id: string, @Body() data: UpdateUserDto) {
+  async update(@Param('id') id: string, @Body() data: UpdateUserDto) {
     return this.userService.update(+id, data);
   }
   @ApiTags('user')
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  async remove(@Param('id') id: string) {
     return this.userService.remove(+id);
   }
 }
