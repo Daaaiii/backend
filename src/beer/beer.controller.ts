@@ -1,7 +1,6 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Param, Query } from '@nestjs/common';
 import { BeerService } from './beer.service';
-import { ApiProperty } from '@nestjs/swagger';
-import { HttpService } from '@nestjs/axios';
+import { ApiBadRequestResponse, ApiProperty, ApiQuery } from '@nestjs/swagger';
 
 @Controller('beer')
 export class BeerController {
@@ -9,8 +8,13 @@ export class BeerController {
 
   @ApiProperty()
   @Get()
-  async findAll() {
-    return await this.beerService.findAll();
+  async findAll(@Query('name') name: string) {
+    try {
+      const beers = await this.beerService.findBeerByName(name);
+      return beers;
+    } catch (e) {
+      throw ApiBadRequestResponse(e);
+    }
   }
 
   @Get(':id')
