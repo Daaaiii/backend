@@ -7,12 +7,11 @@ import * as bcrypt from 'bcrypt';
 @Injectable()
 export class UserService {
   constructor(private readonly prisma: PrismaService) {}
-
+//TODO: validar para apenas 1 email
   async create(data: CreateUserDto) {
     data.password = data.password;
 
     const salt = await bcrypt.genSalt();
-
 
     data.password = await bcrypt.hash(data.password, salt);
 
@@ -33,7 +32,6 @@ export class UserService {
   async update(id: number, { name, email, password, role }: UpdateUserDto) {
     this.exists(id);
     const salt = await bcrypt.genSalt();
-
 
     password = await bcrypt.hash(password, salt);
 
