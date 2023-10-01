@@ -9,6 +9,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { UserService } from 'src/user/user.service';
 import { RegisterAuthDto } from './dto/register-auth.dto';
 import * as bcrypt from 'bcrypt';
+import { MailerService } from '@nestjs-modules/mailer';
 
 @Injectable()
 export class AuthService {
@@ -16,6 +17,7 @@ export class AuthService {
     private readonly JWTService: JwtService,
     private readonly prisma: PrismaService,
     private readonly userService: UserService,
+    private readonly mailer: MailerService,
   ) {}
 
   async createToken(user: User) {
@@ -78,21 +80,57 @@ export class AuthService {
     if (!user) {
       throw new UnauthorizedException('Email está incorreto.');
     }
-    //TODO: enviar email
-    return true;
-  }
-  async reset(password: string, token: string) {
-    //TODO: validar o token
-    const id = 0;
-    const user = await this.prisma.user.update({
-      where: {
-        id,
+
+    const token = this.JWTService.sign(
+      {
+        id: user.id,
       },
-      data: {
-        password,
+      {
+        expiresIn: '30 minutes',
+        subject: String(user.id),
+        issuer: 'forget',
+      },
+    );
+
+    await this.mailer.sendMail({
+      subject: 'Recuperação de senha',
+      to: user.email,
+      template: 'forget',
+      context: {
+        name: user.name,
+        token,
       },
     });
-    return this.createToken(user);
+
+    return true;
+  }
+
+
+  async reset(password: string, token: string) {
+    try {
+      const data = this.JWTService.verify(token, {
+        issuer: 'forget',
+      });
+      if (isNaN(Number(data.id))) {
+        throw new BadRequestException('token inválido');
+      }
+      const salt = await bcrypt.genSalt();
+
+      password = await bcrypt.hash(password, salt);
+
+      const user = await this.prisma.user.update({
+        where: {
+          id: Number(data.id),
+        },
+        data: {
+          password,
+        },
+      });
+
+      return this.createToken(user);
+    } catch (e) {
+      throw new BadRequestException(e);
+    }
   }
 
   async register(data: RegisterAuthDto) {
