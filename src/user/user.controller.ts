@@ -17,8 +17,6 @@ import { AuthGuard } from 'src/guards/auth.guard';
 import { Roles } from 'src/decorators/roles.decorator';
 import { Role } from 'src/enums/role.enums';
 
-@Roles(Role.Admin)
-@UseGuards(AuthGuard, RoleGuard)
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
@@ -29,11 +27,15 @@ export class UserController {
     return this.userService.create(data);
   }
 
+  @Roles(Role.Admin)
+  @UseGuards(AuthGuard, RoleGuard)
   @ApiTags('user')
   @Get()
   async findAll() {
     return this.userService.findAll();
   }
+  @Roles(Role.Admin)
+  @UseGuards(AuthGuard, RoleGuard)
   @ApiTags('user')
   @Get(':id')
   async findOne(@Param('id') id: string) {
@@ -44,6 +46,8 @@ export class UserController {
   async update(@Param('id') id: string, @Body() data: UpdateUserDto) {
     return this.userService.update(+id, data);
   }
+  @Roles(Role.Admin)
+  @UseGuards(AuthGuard, RoleGuard)
   @ApiTags('user')
   @Delete(':id')
   async remove(@Param('id') id: string) {
