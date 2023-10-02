@@ -1,4 +1,10 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -7,9 +13,17 @@ import * as bcrypt from 'bcrypt';
 @Injectable()
 export class UserService {
   constructor(private readonly prisma: PrismaService) {}
-//TODO: validar para apenas 1 email
+
   async create(data: CreateUserDto) {
-    data.password = data.password;
+    if (
+      await this.prisma.user.findUnique({
+        where: {
+          email: data.email,
+        },
+      })
+    ) {
+      throw new ConflictException(`Email já cadastrado.`);
+    }
 
     const salt = await bcrypt.genSalt();
 
@@ -19,7 +33,11 @@ export class UserService {
   }
 
   async findAll() {
-    return this.prisma.user.findMany({});
+    try {
+      return this.prisma.user.findMany({});
+    } catch (error) {
+      throw new UnauthorizedException();
+    }
   }
 
   async findOne(id: number) {
@@ -30,24 +48,43 @@ export class UserService {
   }
 
   async update(id: number, { name, email, password, role }: UpdateUserDto) {
-    this.exists(id);
-    const salt = await bcrypt.genSalt();
+    if (!this.exists(id)) {
+      throw new NotFoundException('Usuário não encontrado');
+    }
+    if (
+      await this.prisma.user.findUnique({
+        where: {
+          email,
+        },
+      })
+    ) {
+      throw new ConflictException(`Email já cadastrado.`);
+    }
 
-    password = await bcrypt.hash(password, salt);
+    try {
+      const salt = await bcrypt.genSalt();
 
-    return await this.prisma.user.update({
-      where: { id },
-      data: {
-        name,
-        email,
-        password,
-        role,
-        updateat: new Date(),
-      },
-    });
+      password = await bcrypt.hash(password, salt);
+
+      return await this.prisma.user.update({
+        where: { id },
+        data: {
+          name,
+          email,
+          password,
+          role,
+          updateat: new Date(),
+        },
+      });
+    } catch (e) {
+      throw new BadRequestException(e);
+    }
   }
 
   async remove(id: number) {
+    if (!this.exists(id)) {
+      throw new NotFoundException('Usuário não encontrado');
+    }
     return this.prisma.user.delete({
       where: { id },
     });
@@ -61,7 +98,7 @@ export class UserService {
         },
       }))
     ) {
-      throw new NotFoundException(`O usuário não existe.`);
+      throw new NotFoundException(`Usuário não encontrado.`);
     }
   }
 }

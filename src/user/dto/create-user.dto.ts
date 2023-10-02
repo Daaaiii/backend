@@ -1,3 +1,4 @@
+import { BadRequestException } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
 import {
   IsStrongPassword,
@@ -11,17 +12,17 @@ import { Role } from 'src/enums/role.enums';
 
 export class CreateUserDto {
   @ApiProperty()
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'Todos os campos precisam ser preenchidos' })
   @IsString()
   name: string;
 
   @ApiProperty()
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'Todos os campos precisam ser preenchidos' })
   @IsEmail()
   email: string;
 
   @ApiProperty()
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'Todos os campos precisam ser preenchidos' })
   @IsStrongPassword({
     minLength: 8,
   })
