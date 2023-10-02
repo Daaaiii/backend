@@ -15,6 +15,10 @@ A autenticação da API foi construída utilizando [JWT](https://jwt.io/) e a de
 
 Além disso, o usuário pode consultar a API [Punk API v2](https://punkapi.com/) e filtrar os resultados por nome ou id. A integração com a API externa foi feita utilizando [Axios](https://axios-http.com/ptbr/).
 
+## Tecnologias utilizadas
+
+[![My Skills](https://skillicons.dev/icons?i=nestjs,js,typescript,nodejs,postman,express,prisma,postgres,git,github,swagger)](https://skillicons.dev)
+
 ## Instalação
 
 ```bash
@@ -32,6 +36,8 @@ $ npm run dev
 
 ```
 
+⚠️  Substitua as várias de ambiente no arquivo `.env`.
+
 ## Documentação
 
 A API foi documentada com o Swagger onde é possível encontrar todas as rotas disponíveis acessando `http://localhost:3000/api`
@@ -40,9 +46,6 @@ Obs.: para verificação da rota `auth/forget` é necessário atualizar os dados
 
 ![Alt text](image.png)
 
-## Tecnologias utilizadas
-
-[![My Skills](https://skillicons.dev/icons?i=nestjs,js,typescript,nodejs,postman,express,prisma,postgres,git,github,swagger)](https://skillicons.dev)
 
 ## Contato
 
